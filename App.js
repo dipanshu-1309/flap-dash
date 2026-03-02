@@ -1,20 +1,23 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { Canvas, useImage, Image} from "@shopify/react-native-skia";
+import { useWindowDimensions } from "react-native";
 
-export default function App() {
+const App = () => {
+  const {width, height} = useWindowDimensions();
+
+  const bg = useImage(require('./assets/sprites/background-day.png')) //way of importing img in RN skia
+  const bird = useImage(require('./assets/sprites/yellowbird-upflap.png'))
+  const r = width * 0.33;
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Canvas style={{ width, height}}>
+      <Image image={bg} width={width} height={height} fit={'cover'} />
+      <Image image={bird}
+      y={height/2 - 24} //note that the top left corner of the asset is considered the point of origin so we subtracted the pixel size according from x and y
+      x={width/2 -32} 
+      height={48} 
+      width={64} />
+    </Canvas>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
