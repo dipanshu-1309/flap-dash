@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Canvas, useImage, Image, Group, Text, useFont } from "@shopify/react-native-skia";
-import { useWindowDimensions } from "react-native";
+import { Canvas, useImage, Image, Group, Text, useFont, matchFont } from "@shopify/react-native-skia";
+import { Platform, useWindowDimensions } from "react-native";
 import {
   Easing,
   Extrapolation,
@@ -36,7 +36,10 @@ const App = () => {
   const base = useImage(require("./assets/sprites/base.png"));
 
   const x = useSharedValue(width - 50); //to update the animation value without rerender
-  const birdY = useSharedValue(height / 3);
+  const birdY = useSharedValue(height / 3);  
+  const birdPos = {
+    x: width /4,
+  };
   const birdYVelocity = useSharedValue(0);
 
     useEffect(() => {
@@ -55,7 +58,7 @@ const App = () => {
   useAnimatedReaction(
     () =>  x.value,
     (currentValue, previousValue) => {
-      const middle = width/2;
+      const middle = birdPos.x;
 
       if (
         currentValue !== previousValue &&
@@ -101,10 +104,17 @@ const App = () => {
   const birdOrigin = useDerivedValue(() => {
     return { x: width / 4 + 32, y: birdY.value + 24 };
   });
- 
+
 
   const pipeOffset = 0; //moves pipes up and down
-  const font = useFont(require("./assets/fonts/Roboto-VariableFont_wdth,wght.ttf"), 40);
+
+ const fontFamily = Platform.select({ ios: "Helvetica", default: "serif" }); 
+ const fontStyle = {
+  fontFamily,
+  fontSize: 40,
+  fontWeight: 'bold',
+};
+const font = matchFont(fontStyle);
 
 
   return (
@@ -149,14 +159,15 @@ const App = () => {
             <Image
               image={bird}
               y={birdY} //the top left corner of the asset is considered the point of origin so we subtracted the pixel size according from x and y
-              x={width / 4}
+              x={birdPos.x}
               height={48}
               width={64}
             /> 
           </Group>
 
           {/*SCORE */}
-          <Text x={width/2} y={150} text={score.toLocaleString()} font={font}color="white"/> 
+           
+          <Text x={width/2 -20} y={100} text={score.toLocaleString()} font={font}color="white"/> 
         </Canvas>
       </GestureDetector>
     </GestureHandlerRootView>
